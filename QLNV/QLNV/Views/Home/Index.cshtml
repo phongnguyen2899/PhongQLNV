@@ -1,0 +1,210 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model IEnumerable<QLNV.Models.NhanvienViewModel>
+@using System.IO;
+<style>
+    * {
+        margin: 0;
+        padding: 0px;
+        font-family: "Helvetica";
+    }
+    body{
+        margin:0 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top:20px;
+    }
+
+    th, td {
+        padding: 8px;
+        border: 1px solid #dee2e6;
+    }
+    tr:first-child {
+        background: #212529;
+        color:white;
+    }
+
+    th {
+        height: 40px;
+        text-align: left;
+    }
+    a{
+        text-decoration:none;
+        color:#000;
+    }
+    .header{
+        display:flex;
+        justify-content:space-between;
+    }
+    .search{
+
+    }
+    .search input{
+
+    }
+    .search a{
+    }
+    .header{
+        margin-top:10px;
+        display:flex;
+        height:38px;
+        align-items:center;
+    }
+    .search_header{
+        display:flex;
+    }
+        .search_header .btn_search {
+            background-color: #4e92df;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            height:100%;
+            margin:0;
+            padding:10px 20px;
+        }
+
+        .search_header input:first-child {
+            width: 200px;
+            margin-right: 10px;
+            outline: none;
+            padding-left: 10px;
+            border: 1px solid #4e92df;
+        }
+    .link_btn {
+        background-color: #4e92df;
+        font-size: 16px;
+        color: white;
+        padding: 10px 20px;
+        border-radius:2px;
+    }
+    .btn_search:hover {
+        background: #2e7dd6;
+        transition: 0,4s;
+    }
+    .link_btn:hover {
+        background: #2e7dd6;
+        transition:0,4s;
+    }
+    .dowload{
+    }
+    .view:hover {
+        color: #2e7dd6;
+    }
+</style>
+
+
+<body>
+    <div class="header">
+        <a class="link_btn" style="font-size:16px;" href="/Home/Create">Thêm Mới</a>
+
+        <form class="search_header" asp-controller="Home" asp-action="Index" method="Get">
+            <input placeholder="Nhập tên nhân viên" class="" type="text" name="search" />
+            <input class="btn_search" type="submit" value="Tìm Kiếm" />
+        </form>
+    </div>
+
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Tên chức vụ</th>
+            <th>Tên vị trí</th>
+            <th>Tên NV</th>
+            <th>Ngày sinh</th>
+            <th>Địa chỉ</th>
+            <th>Email</th>
+            <th>CV</th>
+            <th>Người Giới thiệu</th>
+            <th>Hành động</th>
+
+        </tr>
+
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Tenchucvu</td>
+                <td>@item.Tenvitri</td>
+                <td>@item.Ten</td>
+                <td>@item.Ngaysinhh</td>
+                <td>@item.Diachi</td>
+                <td>@item.Email</td>
+                <td>
+                    @if (item.CV != null)
+                    {
+                        @if (item.CV.Split(".").Last() == "pdf")
+                        {
+                            <a title="Click để xem cv" class="view" href="~/uploads/@item.CV">@item.CV</a>
+                        }
+                        else
+                        {
+                            var a = item.CV.Split(".").Last();
+                            <a title="Click để tải cv" class="view " href="Home/Dowloadfile/@item.CV">@item.CV</a>
+                        }
+                    }
+
+
+                </td>
+                <td>@item.Nguoigioithieu</td>
+                <td>
+                    <a class="xoabnt" onclick="deletenv(@item.Id)" id="@item.Id" href="Home/Edit/@item.Id">Sửa</a>
+                    <a href="#" id="@item.Id" onclick="deleteconfirm(@item.Id)">Xóa</a>
+                </td>
+
+            </tr>
+        }
+    </table>
+</body>
+<script>
+
+    function deleteconfirm(id) {
+        var url = "/Home/Delete/" + id + ""
+        fetch(url, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            method: "POST",
+            body: JSON.stringify({ id })
+        }).then(response => response.json())
+            .then(function (data) {
+                var obj = JSON.parse(JSON.stringify(data))
+                if (obj.mes == "thanh cong") {
+                    var item = document.getElementById(id);
+                    var action = item.parentElement;
+                    var tr = action.parentElement;
+                    tr.style.display = 'none';
+                    alert("thanh cong");
+                }
+                else {
+                    alert('that bai')
+                }
+                
+            })
+    }
+    function deleteRow(btn) {
+        var row = btn.parentNode
+        row.parentNode.removeChild(row);
+    }
+
+    var trElement = document.getElementsByTagName('tr')
+    for (var i = 1; i < trElement.length; i++) {
+        if (i % 2 == 0) {
+            trElement[i].style.background = "#dee2e6";
+        }
+    }
+
+  
+</script>
+
+
